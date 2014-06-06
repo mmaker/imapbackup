@@ -17,10 +17,11 @@ import (
 )
 
 var (
-	server   = flag.String("server", "mail.autistici.org:993", "IMAP server address")
+	server   = flag.String("server", "mail.autistici.org", "IMAP server address")
 	username = flag.String("user", "", "Username")
 	password = flag.String("password", "", "Password")
 	output   = flag.String("outfile", "", "Output ZIP file name")
+	notls    = flag.Bool("notls", false, "Do *NOT* use TLS protocol")
 
 	mboxCh       = make(chan *imap.MailboxInfo, 5)
 	msgCh        = make(chan *Message, 100)
@@ -58,21 +59,16 @@ func Check(cmd *imap.Command, err error) *imap.Command {
 func Connect() *imap.Client {
 	var err error
 	var c *imap.Client
-	if strings.HasSuffix(*server, ":993") {
-		c, err = imap.DialTLS(*server, nil)
-	} else {
-		s := *server
-		if strings.Index(*server, ":") < 0 {
-			s = s + ":143"
+	if *notls {
+		c, err = imap.Dial(*server)
+		if c.Caps["STARTTLS"] {
+			Check(c.StartTLS(nil))
 		}
-		c, err = imap.Dial(s)
+	} else {
+		c, err = imap.DialTLS(*server, nil)
 	}
 	if err != nil {
 		log.Fatal(err)
-	}
-
-	if c.Caps["STARTTLS"] {
-		Check(c.StartTLS(nil))
 	}
 
 	Check(c.Login(*username, *password))
