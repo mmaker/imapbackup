@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	server   = flag.String("server", "mail.autistici.org:143", "IMAP server address")
+	server   = flag.String("server", "mail.autistici.org:993", "IMAP server address")
 	username = flag.String("user", "", "Username")
 	password = flag.String("password", "", "Password")
 	output   = flag.String("outfile", "", "Output ZIP file name")
