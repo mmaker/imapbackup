@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"code.google.com/p/go-imap/go1/imap"
+	"github.com/mxk/go-imap/imap"
 )
 
 var (
